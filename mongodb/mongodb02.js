@@ -43,6 +43,14 @@ router.get('/add', async ctx => {
   // ctx.body = '新闻列表页面'
 })
 
+router.get('/addmore', async ctx => {
+  let result = await DB.insertMany('user',[
+    { "username": "戴佳伦", "age": "25", "sex": "0", "status": "1" },
+    { "username": "高辛基", "age": "26", "sex": "1", "status": "1" },
+    { "username": "顾豪杰", "age": "26", "sex": "1", "status": "1" },
+  ])
+})
+
 router.get('/edit', async ctx => {
   let result = await DB.update('user', {"username": "dyong"}, {"username": "lliuy"})
   console.log(result.result.ok) // 等于1就是成功

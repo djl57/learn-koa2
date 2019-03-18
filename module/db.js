@@ -1,10 +1,8 @@
 // db库  封装
-
 const MongoClient = require('mongodb').MongoClient
 const assert = require('assert');
 const config = require('./config')
 
-// 封装db类库，这种封装方式每次查询都要连接数据库
 class Db {
   static getInstance() { // 大地老师的视频中用了这个优化了1000ms，但是我这边试出来只相差0.2ms
     if (!Db.instance) {
@@ -39,10 +37,10 @@ class Db {
     })
   }
 
-  find(collectionName, json) { // 需要传一个表名collection，和一个查询条件json
+  find(collectionName, json) { // json 为{}查询全部
     return new Promise((resolve, reject) => {
       this.connect().then(db => {
-        const result = db.collection(collectionName).find(json) // 在collectionName中查找json
+        const result = db.collection(collectionName).find(json)
         result.toArray((err, docs) => {
           if (err) {
             reject(err)
@@ -84,6 +82,20 @@ class Db {
     })
   }
 
+  insertMany(collectionName, arr) {
+    return new Promise((resolve, reject) => {
+      this.connect().then(db => {
+        db.collection(collectionName).insertMany(arr, (err, result) => {
+          if (err) {
+            reject(err)
+            return
+          }
+          resolve(result)
+        })
+      })
+    })
+  }
+
   remove(collectionName, json) {
     return new Promise((resolve, reject) => {
       this.connect().then(db => {
@@ -93,6 +105,20 @@ class Db {
             return
           }
           resolve(result)
+        })
+      })
+    })
+  }
+
+  indexCollection(collectionName, json) { // 创建索引
+    return new Promise((resolve, reject) => {
+      this.connect().then(db => {
+        db.collection(collectionName).createIndex(json, null, (err, results) => {
+          if (err) {
+            reject(err)
+            return
+          }
+          resolve(results)
         })
       })
     })
